@@ -1,0 +1,303 @@
+@01.Overview of jQuery
+01.01 WHAT IS JQUERY
+  . Is a free, open JavaScript library
+  . Simplifies the task of creating highly responsive web pages
+  . Works across modern browsers
+  . Abstracts away browser-specific features, allowing you to concentrate on design
+  
+  . Focuses on simplifying common scripting tasks
+    - Getting and manipulating page content
+	- Working with the modern browser event model
+	- Adding sophisticated effects
+	
+  . Most modern web development scenarios involve common patterns:
+
+					Perform a 
+	  page loads ->  bunch of 
+					page setup
+
+				Retrieve        Manipulate or       Put the
+	  event -> content from  ->  animate the   -> content back
+				 the page          content         in the page
+
+  BENEFITS OF USING jQuery
+  . Leverages your existing knowledge of CSS
+  . Works with sets of elements
+  . Performs multiple operations on a set of elements with one line of code
+    (known as statement chaining)
+  . Hides various browser quirks (so you can concentrate on the end result)
+  . Is extensible (so you can use third-party-plug-ins to perform specialized tasks, or write your owns)
+  
+  jQuery BROWSER COMPATIBILITY
+  . Currently compatible with modern versions of all the main browser in use today
+  
+01.02 DOWNLOADING AND INSTALLING jQuery
+  -> http://www.jquery.com
+  There are two versions of jQuery:
+   . compressed production version
+   . uncompressed development
+
+01.03 CREATING A SIMPLE jQuery-ENABLED PAGE
+  . For our first jQuery example, we're going to keep things simple:
+    1. Include a reference to the jQuery library
+	2. Install and event handler that responds to the page loading in the browser window
+	3. Display an alert that indicates that the event handler was called and that jQuery is therefore working
+	
+  . Typically code that you want to execute when the page is loaded is written like this:
+    
+		function runOnLoad()
+		{
+		  alert("the page just loaded!");
+		}
+		windows.onload = runOnLoad;
+
+  . The on-load event only fires after all of the page content has downloaded, including images
+  . It's also harder to add multiple load functions
+  . jQuery provides a way to run code when the DOM of page is ready, this is call the document.ready event
+
+  . The document.ready event is written like this:
+
+		$("document").ready(function(){
+		    alert("the page just loaded!");
+		  });
+		  
+  . This code will now execute when the DOM has loaded instead of waiting for all the page content finish downloading
+  . Also, you can call the document.ready function multiple times, and jQuery will chain together each one to be called in succesion
+	
+  -> Let's create our first example
+	//jQuery.index
+	<!DOCTYPE html>
+	<html lang=en>
+	<head>
+	  <meta charset="UTF-8">
+	  <script type="text/javascript" src="js/jquery-3.1.0.js"></script>
+	  <script type="text/javascript">
+		$("document").ready(function(){
+			alert("Hello, World!!!");
+		});
+	  </script>
+	</head>
+	<body>
+	</body>
+	</html>
+
+01.04 Overview of jQuery's 
+  . jQuery's features break down across 8 major categories:
+    - Core Functionality: Implements core jQuery functions as well as commonly used utilities
+	- Selection and Traversal: Functions for finding content in documents and navigating among the contents of the document
+	- Manipulation & CSS: Functions for editing and changing document content and working with CSS data such as positioning	 info
+	- Events: Simplifies working with the modern DOM events and provides common event helper functions
+	- Effects: Functions for creating basic animations and effects, such as hiding and showing elements and moving objects around
+	- AJAX: Utilities for working with AJAX, such as loading content from pages and dealing with JSON data
+	
+	
+@02.Retrieving Page Content
+02.01 OVERVIEW OF SELECTORS AND FILTERS
+  In this lesson we're going to see how to use jQuery to retrieve Content from the Page.
+  
+  . jQuery selectors and filters retrieve content from  the document so it can be manipulated using other functions.
+    (
+	of this is the "Query" part of the "jQuery")
+    - jQuery selectors return an array of objects that match the selection criteria
+	- jQuery filters operate on a selector to further refine the results array that the selector returns.
+	
+  . This array is not a set of DOM elements
+  . It is a collection of jQuery objects that provide a large number of predefined functions for further operating on the objects.
+
+
+02.02 USING BASIC jQuery SELECTORS
+  . CSS-style selectors and filters are based on familiar CSS syntax, and work pretty much the same way as CSS does
+  . The CSS selectors listed here correspond directly to their CSS counterparts
+  
+  SELECTOR          PURPOSE
+  tagname           Finds all elements that are named tagname
+  #identifier       Finds all elements with ID or images
+  .className        Finds all elements that have class attribute with the value of className
+  tag.className     Gets elements of type tag that have a class attribute with the value of className
+  #id.className     Retrieves the tag element that has an ID of id and a class attribute with the value of className
+  
+  . Using jQuery vs. using the plain browser DOM
+
+	  <html>
+	  <head>
+		<title>Document</title>
+	  </head>
+	  <body>
+		<ul id="list1">
+		  <li class="a">item 1</li>
+		  <li class="a">item 2</li>
+		  <li class="b">item 3</li>
+		  <li class="b">item 3</li>
+		</ul>
+		<p>This is paragraph 1</p>
+		<p>This is paragraph 2</p>
+		<p>This is paragraph 3</p>
+		<p>This is paragraph 4</p>
+	  </body>
+	  </html>
+	  
+  Get all <p> tags:
+    (DOM)    -> document.getElementsbyTagName("p");
+	(jQuery) -> $("p");
+	
+  Get the tag with id "list1":
+    (DOM)    -> document.getElementById("list1");
+	(jQuery) -> $("#list1")
+
+  Get all <li> tags with a class "a":
+    (jQuery) -> $("li.a")
+
+  Get all tags with class "b", but only if they are inside a <ul> (jQuery):
+    (jQuery) -> $("ul .b")
+	
+  . The hierarchy and combination selectors allow you to get a little more advanced in selecting page content
+  . You can select elements based on hierarchical relationships or on a series of common criteria
+  
+  SELECTOR                  PURPOSE
+  selector,selector,...    Finds all of the specified selectors
+  .class1.class2            Finds all elements with both .class1 and .class2 applied
+  parent > child            Finds all child elements that are direct children of elements of type parent
+  ancestor descendant       Finds all descendant elements that are contained within elements of type ancestor
+  prev + next               Finds all next elements that are next to a prev element
+  prev ~ siblings           Finds all sibling elements that come after prev and match the siblings selector
+  
+  -> Let's practice some basic selectors
+	//BasicSelectors_start.htm
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<title>Document</title>
+	<script type="text/javascript" src="../jquery-1.9.1.js"></script>
+	<script type="text/javascript">
+		$("document").ready(function() {
+		});
+	</script>
+	<style type="text/css">
+	.a { color: Navy; }
+	.b { color: Maroon; }
+	</style>
+	</head>
+	<body>
+		<ul id="list1">
+			<li class="a">item 1</li>
+			<li class="a">item 2</li>
+			<li class="b">item 3</li>
+			<li class="b">item 4</li>
+		</ul>
+	<p class="a">This is paragraph 1</p>
+	<p>This is paragraph 2</p>
+	<p class="b">This is paragraph 3</p>
+	<p id="paragraph" class="c">This is paragraph 4</p>
+	</body>
+	</html>
+
+		. paragraph tags                     -> $(p).class("border", "3px solid red");
+		. everithing that has class a        -> $(.a).class("border", "3px solid red"); 
+		. id 'list1'                         -> $(#list1).class("border", "3px solid red");
+		. paragrapsh that has class b        -> $(p.b).class("border", "3px solid red");
+		. tag with id paragraph and class c  -> $(#paragraph.c)class("border", "3px solid red");
+
+  -> Let's practice some hierarchichal selectors
+    //HierCombo_start.html
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<title>Document</title>
+	<script type="text/javascript" src="../jquery-1.9.1.js"></script>
+	<script type="text/javascript">
+		$("document").ready(function() {
+
+		});
+	</script>
+	<style type="text/css">
+	.a { color: Navy; }
+	.b { color: Maroon; }
+	</style>
+	</head>
+	<body>
+		<ul id="list1">
+			<li class="a">item 1</li>
+			<li class="a">item 2</li>
+			<li class="b">item 3</li>
+			<li class="b">item 4</li>
+		</ul>
+		<p class="a">This is paragraph 1</p>
+		<p id="para1">This is paragraph 2</p>
+		<p class="b">This is paragraph 3</p>
+		<p>This is paragraph 4</p>
+	</body>
+	</html>
+
+		. paragraphs and list that has b applied
+		. descendent opperator ul li
+		. next operator 
+		. siblings
+		
+02.03 jQuery SELECTORS AND FILTERS: USING FILTERS
+  
+  . Filters work with selectors to provide even more fine-grained control over how elements
+    are selected in the document
+  . jQuery filters fall into six different categories
+  
+    - Basic: Provides basic filtering, like getting the first, last, and even- and odd-numbered items in a returned set
+	- Content: Filters a set of elements based on the content, like whether an element contains a particular string
+	- Visibility: Filters a set of elements using the visibility setting of each element as a test
+	- Attribute: Examines a given attribute on an element to determine whether it should be filtered out
+	- Child: Selects elements based upon their relationship with their parent element
+    - Form: Provides specialized filters that operate on form elements
+	
+  . You can refine a selector by including elements that match certain conditions, like position or index.
+   
+    FILTER           PURPOSE
+	:first           Selects only the first instance of the selecto's returned set
+	:last			 Selects only the last instance of the selecto's returned set
+	:even            Selects only even-numbered elements in the selector's returned set
+	:odd             Selects only odd-numbered elements in the selector's returned set
+	:eq(n)           Filters out elements that are not positioned at the given index
+	:gt(n)			 Includes elements that are past the given index
+	:lt(n)           Includes elements that are before the given index
+	:header			 Selects all header elements (H1, H2, H3, etc)
+	:animated        Selects all elements that are currently being animated in some way
+	:not(selector)	 Includes elements that do not match the given selector
+	
+  -> Let's practice some filters
+    //BasicFilters_start.html
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<title>Document</title>
+	<script type="text/javascript" src="../js/jquery-3.1.0.js"></script>
+	<script type="text/javascript">
+	   $("document").ready(function(){
+		  //$("p:first").css("border", "3px solid red");
+		  //$("p:last").css("border", "3px solid red");
+		  //$("p:even").css("border", "3px solid red");
+		  //$("p:odd").css("border", "3px solid red");
+		  //$(".b:first").css("border", "3px solid red");
+		  //$("p:gt(1)").css("border", "3px solid red");
+		  //$("p:not(p:gt(2))").css("border", "3px solid red");
+
+	   });
+	</script>
+	<style type="text/css">
+	.a { color: Navy; }
+	.b { color: Maroon; }
+	</style>
+	</head>
+	<body>
+		<ul id="list1">
+			<li class="a">item 1</li>
+			<li class="a">item 2</li>
+			<li class="b">item 3</li>
+			<li class="b">item 4</li>
+		</ul>
+	<p class="a">This is paragraph 1</p>
+	<p id="para1">This is paragraph 2</p>
+	<p class="b">This is paragraph 3</p>
+	<p id="para4" lang="en-us">This is paragraph 4</p>
+	</body>
+	</html>
+
