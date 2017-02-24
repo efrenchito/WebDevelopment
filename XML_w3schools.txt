@@ -1,0 +1,625 @@
+XML Tutorial
+  ¿What is XML?
+    .XML stands for eXtensibleMarkupLanguage
+    .XML is a markup language much like HTML
+    .XML was designed to store and transport data
+    .XML was designed to be self-descriptive
+    .XML is a W3C Recommendation
+  
+    The Difference between XML and HTML
+      .XML was designed to carry data - with focus on what data is
+      .HTML was designed to display data - with focus on how data looks
+      .XML tags are not predefined like HTML tags are
+  
+    <?xml version="1.0" encoding="UTF-8"?>
+      <note>
+        <to></to>
+        <from></from>
+        <heading></heading>
+        <body></body>
+      </note>
+  
+  XML Syntax Rules
+    1.XML prolog is optional -> <?xml version="1.0" encoding="UTF-8"?>
+    2.XML Documents must have a Root Element
+    3.All XML elements must have a Closing tag
+    4.XML tags are Case sensitive
+    5.XML elements must be properly Nested
+    6.Attribute values must be quoted
+    7.Entity References (&lt; &gt; &amp; &apos; &quot;)
+    8.Comments <!-- This is a comment --> ('--' Two dashes in the middle of a comment are not allowed)
+  
+  XML Elements
+    An XML document contains XML Elements.
+      .tags
+      .text
+      .attributes
+      .other elements
+      .or a mix of the above
+  
+    Empty XML Elements
+      <element></element>
+      <element />
+  
+    XML Naming Rules
+      .Element names are case-sensitive
+      .Element names must start with a letter or undescore
+      .Element names cannot start with the letters (XML,Xml,...)
+      .Element names can contain letters, digits, hyphens, underscores, and periods
+      .Element names cannot contain spaces
+  
+    Naming Styles
+      [STYLE]      [EXAMPLE]    [DESCRIPTION]
+     .Lower case   <firstname>  All letter lower case
+     .Upper case   <FIRSTNAME>  All letter upper case
+     .Underscore   <first_name> Underscore separates words
+     .Pascal case  <FirstName>  Uppercase first letter in each word
+     .Camel case   <firstName>  Uppercase first letter in each word except the first
+  
+    XML Elements are Extensible
+      XML elements can be extended to carry more information.
+      Let's imagine that we created an application that extracted the <to>, <from>, and <body> elements from the XML document.
+      Imagine that the author of the XML document added some extra information to it.
+    Should the application break or crash? No. The application should still be able to find the <to>, <from>, and <body> elements in the XML     document and produce the same output.
+  
+  XML Attributes
+    XML elements can have attributes, just like HTML.
+    Attributes are designed to contain Metadata related to a specific element.
+  
+    XML Attributes must be Quoted
+      <gangster name='George "Shotgun" Ziegler'>
+      <gangster name='George &quot;Shotgun&quot; Ziegler'>
+  
+    XML Elements vs. Attributes
+      <note date="2008-01-10">
+        <to>Tove</to>
+        <from>Jani</from>
+      </note>
+  
+      <note>
+        <date>2008-01-10</date>
+        <to>Tove</to>
+        <from>Jani</from>
+      </note>
+  
+      <note>
+        <date>
+          <year>2008</year>
+          <month>01</month>
+          <day>10</day>
+        </date>
+        <to>Tove</to>
+        <from>Jani</from>
+      </note>
+  
+    Avoid XML Attributes?
+      Some things to consider when using attributes are:
+      .attributes cannot contain multiple values (elements can)
+      .attributes cannot contain tree structures (elements can)
+      .attributes are not easily expandable      (for future change
+  
+  XML Namespaces
+      XML Namespaces provide a method to avoid element name conflicts.
+  
+      Name Conflicts
+      In XML, element names are defined by the developer. This often results in a conflict when trying to mix XML documents from different XML   applications.
+  
+      This XML carries HTML table information:      This XML carries information about a table (a piece of furniture):
+        <table>                                     <table>
+          <tr>                                        <name>African Coffee Table</name>
+            <td>Apples</td>                           <width>80</width>
+            <td>Bananas</td>                          <length>120</length>
+          </tr>                                     </table>
+        </table>
+  
+      -> Solving the Name Conflict Using a Prefix
+        Name conflicts in XML can easily be avoided using a name prefix.
+        This XML carries information about an HTML table, and a piece of furniture:
+        <h:table>                                     <f:table>
+          <h:tr>                                        <f:name>African Coffee Table</f:name>
+            <h:td>Apples</h:td>                           <f:width>80</f:width>
+            <h:td>Bananas</h:td>                          <f:length>120</f:length>
+          </h:tr>                                     </f:table>
+        </h:table>
+  
+      XML Namespaces - The xmlns Attribute
+        When using prefixes in XML, a namespace for the prefix must be defined.
+        The namespace can be defined by an xmlns attribute in the start tag of an element.
+        The namespace declaration has the following syntax. xmlns:prefix="URI".
+  
+        <root>                                              <root>
+          <h:table xmlns:h="http://www.w3.org/TR/html4/">     <f:table xmlns:f="https://www.w3schools.com/furniture">
+            <h:tr>                                              <f:name>African Coffee Table</f:name>
+              <h:td>Apples</h:td>                                 <f:width>80</f:width>
+              <h:td>Bananas</h:td>                                <f:length>120</f:length>
+            </h:tr>                                           </f:table>
+          </h:table>                                        </root>
+        </root>
+  
+      Namespaces can also be declared in the XML root element:
+        <root                                         <root
+          xmlns:h="http://www.w3.org/TR/html4/">        xmlns:f="https://www.w3schools.com/furniture">
+          <h:table>                                     <f:table>
+            <h:tr>                                        <f:name>African Coffee Table</f:name>
+              <h:td>Apples</h:td>                         <f:width>80</f:width>
+              <h:td>Bananas</h:td>                        <f:length>120</f:length>
+            </h:tr>                                     </f:table>
+          </h:table>                                  </root>
+        </root>
+  
+      Note: The namespace URI is not used by the parser to look up information.
+      The purpose of using an URI is to give the namespace a unique name.
+      However, companies often use the namespace as a pointer to a web page containing namespace information.
+  
+  
+      Default Namespaces
+        Defining a default namespace for an element saves us from using prefixes in all the child elements. It has the following syntax:
+          .xmlns="namespaceURI"
+  
+        <table xmlns="http://www.w3.org/TR/html4/">   <table xmlns="https://www.w3schools.com/furniture">
+          <tr>                                          <name>African Coffee Table</name>
+            <td>Apples</td>                             <width>80</width>
+            <td>Bananas</td>                            <length>120</length>
+          </tr>                                       </table>
+        </table>
+  
+  XML HttpRequest
+    All modern browsers have a built-in XMLHttpRequest object to request data from a server.
+  
+    The XMLHttpRequest Object: can be used to request data from a web server.
+      . Update a web page without reloading the page
+      . Request data from a server - after the page has loaded
+      . Receive data from a server  - after the page has loaded
+      . Send data to a server - in the background
+  
+    Old versions of Internet Explorer (IE5 and IE6) do not support the XMLHttpRequest object.
+    To handle IE5 and IE6, check if the browser supports the XMLHttpRequest object, or else create an ActiveXObject:
+  
+      if (window.XMLHttpRequest) {
+          // code for modern browsers
+          xmlhttp = new XMLHttpRequest();
+      } else {
+          // code for old IE browsers
+          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+  
+  XML Parser
+      All major browsers have a built-in XML parser to access and manipulate XML.
+      The XML DOM (Document Object Model) defines the properties and methods for accessing and editing XML.
+      However, before an XML document can be accessed, it must be loaded into an XML DOM object.
+      All modern browsers have a built-in XML parser that can convert text into an XML DOM object.
+  
+        <!DOCTYPE html>
+        <html>
+        <body>
+  
+          <p id="demo"></p>
+  
+          <script>
+          var parser, xmlDoc;
+          var text = "<bookstore><book>" +
+          "<title>Everyday Italian</title>" +
+          "<author>Giada De Laurentiis</author>" +
+          "<year>2005</year>" +
+          "</book></bookstore>";
+  
+          if (window.DOMParser) {
+            // code for modern browsers
+            parser = new DOMParser();
+            xmlDoc = parser.parseFromString(text,"text/xml");
+          } else {
+            // code for old IE browsers
+          xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            xmlDoc.async = false;
+            xmlDoc.loadXML(text); 
+          } 
+  
+          document.getElementById("demo").innerHTML =
+          xmlDoc.getElementsByTagName("year")[0].childNodes[0].nodeValue;
+          </script>
+  
+        </body>
+        </html>
+  
+  
+      The XMLHttpRequest Object
+        The XMLHttpRequest Object has a built in XML Parser.
+        The responseText property returns the response as a string.
+        The responseXML property returns the response as an XML DOM object.
+        If you want to use the response as an XML DOM object, you can use the responseXML property.
+  
+        <!DOCTYPE html>
+          <html>
+          <body>
+          <h2>My CD Collection:</h2>
+  
+          <button type="button" onclick="loadXMLDoc()">
+          Get my CD collection</button>
+  
+          <p id="demo"></p>
+  
+          <script>
+          function loadXMLDoc() {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                myFunction(this);
+              }
+            };
+            xmlhttp.open("GET", "cd_catalog.xml", true);
+            xmlhttp.send();
+          }
+  
+          function myFunction(xml) {
+            var x, i, xmlDoc, txt;
+            xmlDoc = xml.responseXML;
+            txt = "";
+            x = xmlDoc.getElementsByTagName("ARTIST");
+            for (i = 0; i< x.length; i++) {
+              txt += x[i].childNodes[0].nodeValue + "<br>";
+            }
+            document.getElementById("demo").innerHTML = txt;
+          }
+          </script>
+  
+          </body>
+          </html>
+  
+  XML DOM
+    What is the DOM?
+    The DOM defines a standard for accessing and manipulating documents:
+    "The W3C Document Object Model (DOM) is a platform and language-neutral interface that allows programs and scripts to dynamically access and   update the content, structure, and style of a document."
+  
+    The HTML DOM defines a standard way for accessing and manipulating HTML documents. It presents an HTML document as a tree-structure.
+    The XML DOM defines a standard way for accessing and manipulating XML documents. It presents an XML document as a tree-structure.
+  
+      -> Example(html)
+        <h1 id="demo">This is a Heading</h1>
+  
+        <button type="button"
+        onclick="document.getElementById('demo').innerHTML = 'Hello World!'">Click Me!
+        </button>
+  
+      -> Example(xml)
+        <html>
+        <body>
+  
+        <p id="demo"></p>
+  
+        <script>
+        var text, parser, xmlDoc;
+  
+        text = "<bookstore><book>" +
+        "<title>Everyday Italian</title>" +
+        "<author>Giada De Laurentiis</author>" +
+        "<year>2005</year>" +
+        "</book></bookstore>";
+  
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(text,"text/xml");
+  
+        document.getElementById("demo").innerHTML =
+        xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+        </script>
+  
+        </body>
+        </html>  
+  
+  
+  XML and XPath
+    What is XPath?
+      XPath is a major element in the XSLT standard.
+      XPath can be used to navigate through elements and attributes in an XML document.
+  
+        .XPath is a syntax for defining parts of an XML document
+        .XPath uses path expressions to navigate in XML documents
+        .XPath contains a library of standard functions
+        .XPath is a major element in XSLT and in XQuery
+        .XPath is a W3C recommendation
+  
+  XML and XSLT
+    With XSLT you can transform an XML document into HTML.
+  
+      Displaying XML with XSLT
+      XSLT (eXtensible Stylesheet Language Transformations) is the recommended style sheet language for XML.
+    XSLT is far more sophisticated than CSS. With XSLT you can add/remove elements and attributes to or from the output file. You can also   rearrange and sort elements, perform tests and make decisions about which elements to hide and display, and a lot more.
+      XSLT uses XPath to find information in an XML document.
+  
+      -> Example(XSLT)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <html xsl:version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <body style="font-family:Arial;font-size:12pt;background-color:#EEEEEE">
+        <xsl:for-each select="breakfast_menu/food">
+          <div style="background-color:teal;color:white;padding:4px">
+            <span style="font-weight:bold"><xsl:value-of select="name"/> - </span>
+            <xsl:value-of select="price"/>
+            </div>
+          <div style="margin-left:20px;margin-bottom:1em;font-size:10pt">
+            <p>
+            <xsl:value-of select="description"/>
+            <span style="font-style:italic"> (<xsl:value-of select="calories"/> calories per serving)</span>
+            </p>
+          </div>
+        </xsl:for-each>
+        </body>
+        </html>
+  
+  XML and XQuery
+    XQuery is to XML what SQL is to databases.
+    XQuery was designed to query XML data.
+  
+      What is XQuery?
+       .XQuery is the language for querying XML data
+       .XQuery for XML is like SQL for databases
+       .XQuery is built on XPath expressions
+       .XQuery is supported by all major databases
+       .XQuery is a W3C Recommendation
+  
+      XQuery - Examples of Use
+        XQuery can be used to:
+         .Extract information to use in a Web Service
+         .Generate summary reports
+         .Transform XML data to XHTML
+         .Search Web documents for relevant information
+  
+      XQuery Example
+        for $x in doc("books.xml")/bookstore/book
+        where $x/price>30
+        order by $x/title
+        return $x/title
+  
+  XML, XLink and XPointer
+    XLink is used to create hyperlinks in XML documents.
+  
+    .XLink is used to create hyperlinks within XML documents
+    .Any element in an XML document can behave as a link
+    .With XLink, the links can be defined outside the linked files
+    .XLink is a W3C Recommendation
+  
+      -> Example(XLink)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <bookstore xmlns:xlink="http://www.w3.org/1999/xlink">
+          <book title="Harry Potter">
+            <description
+            xlink:type="simple"
+            xlink:href="/images/HPotter.gif"
+            xlink:show="new">
+            As his fifth year at Hogwarts School of Witchcraft and
+            Wizardry approaches, 15-year-old Harry Potter is.......
+            </description>
+          </book>
+  
+          <book title="XQuery Kick Start">
+            <description
+            xlink:type="simple"
+            xlink:href="/images/XQuery.gif"
+            xlink:show="new">
+            XQuery Kick Start delivers a concise introduction
+            to the XQuery standard.......
+            </description>
+          </book>
+        </bookstore>
+  
+        .The XLink namespace is declared at the top of the document (xmlns:xlink="http://www.w3.org/1999/xlink")
+        .The xlink:type="simple" creates a simple "HTML-like" link
+        .The xlink:href attribute specifies the URL to link to (in this case - an image)
+        .The xlink:show="new" specifies that the link should open in a new window
+  
+    XPointer
+      .XPointer allows links to point to specific parts of an XML document
+      .XPointer uses XPath expressions to navigate in the XML document
+      .XPointer is a W3C Recommendation
+  
+      Example(XPointer)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <dogbreeds>
+          <dog breed="Rottweiler" id="Rottweiler">
+            <picture url="https://dog.com/rottweiler.gif" />
+            <history>The Rottweiler's ancestors were probably Roman
+            drover dogs.....</history>
+            <temperament>Confident, bold, alert and imposing, the Rottweiler
+            is a popular choice for its ability to protect....</temperament>
+          </dog>
+          <dog breed="FCRetriever" id="FCRetriever">
+            <picture url="https://dog.com/fcretriever.gif" />
+            <history>One of the earliest uses of retrieving dogs was to
+            help fishermen retrieve fish from the water....</history>
+            <temperament>The flat-coated retriever is a sweet, exuberant,
+            lively dog that loves to play and retrieve....</temperament>
+          </dog>
+        </dogbreeds>
+  
+        Note that the XML document above uses id attributes on each element!
+        So, instead of linking to the entire document (as with XLink), XPointer allows you to link to specific parts of the document. 
+  
+        <?xml version="1.0" encoding="UTF-8"?>
+        <mydogs xmlns:xlink="http://www.w3.org/1999/xlink">
+          <mydog>
+            <description>
+            Anton is my favorite dog. He has won a lot of.....
+            </description>
+            <fact xlink:type="simple" xlink:href="https://dog.com/dogbreeds.xml#Rottweiler">
+            Fact about Rottweiler 
+            </fact>
+          </mydog>
+          <mydog>
+            <description>
+            Pluto is the sweetest dog on earth......
+            </description>
+            <fact xlink:type="simple" xlink:href="https://dog.com/dogbreeds.xml#FCRetriever">
+            Fact about flat-coated Retriever 
+            </fact>
+          </mydog>
+        </mydogs>
+  
+  XML DTD
+    An XML document with correct syntax is called "Well Formed".
+    An XML document validated against a DTD is both "Well Formed" and "Valid".
+  
+    Valid XML Documents
+    A "Valid" XML document is a "Well Formed" XML document, which also conforms to the rules of a DTD:
+  
+      When to Use a DTD/Schema?
+        With a DTD, independent groups of people can agree to use a standard DTD for interchanging data.
+        With a DTD, you can verify that the data you receive from the outside world is valid.
+  
+        You can also use a DTD to verify your own data.
+        If you want to study DTD, please read our DTD Tutorial.
+  
+    The purpose of a DTD is to define the structure of an XML document. It defines the structure with a list of legal elements:
+      
+      <!DOCTYPE note
+      [
+      <!ELEMENT note (to,from,heading,body)>
+      <!ELEMENT to (#PCDATA)>
+      <!ELEMENT from (#PCDATA)>
+      <!ELEMENT heading (#PCDATA)>
+      <!ELEMENT body (#PCDATA)>
+      ]>
+  
+      The DTD above is interpreted like this:
+        -> #PCDATA means parse-able text data.
+  
+        .!DOCTYPE note defines that the root element of the document is note
+        .!ELEMENT note defines that the note element must contain the elements: "to, from, heading, body"
+        .!ELEMENT to defines the to element to be of type "#PCDATA"
+        .!ELEMENT from defines the from element to be of type "#PCDATA"
+        .!ELEMENT heading defines the heading element to be of type "#PCDATA"
+        .!ELEMENT body defines the body element to be of type "#PCDATA"
+  
+  
+  XML Schema
+    An XML Schema describes the structure of an XML document, just like a DTD.
+    An XML document with correct syntax is called "Well Formed".
+    An XML document validated against an XML Schema is both "Well Formed" and "Valid".
+  
+      XML Schema is an XML-based alternative to DTD:
+        <xs:element name="note">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="to" type="xs:string"/>
+              <xs:element name="from" type="xs:string"/>
+              <xs:element name="heading" type="xs:string"/>
+              <xs:element name="body" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+  
+      The Schema above is interpreted like this:
+        .<xs:element name="note"> defines the element called "note"
+        .<xs:complexType> the "note" element is a complex type
+        .<xs:sequence> the complex type is a sequence of elements
+        .<xs:element name="to" type="xs:string"> the element "to" is of type string (text)
+        .<xs:element name="from" type="xs:string"> the element "from" is of type string
+        .<xs:element name="heading" type="xs:string"> the element "heading" is of type string
+        .<xs:element name="body" type="xs:string"> the element "body" is of type string
+  
+      The purpose of an XML Schema is to define the legal building blocks of an XML document:
+        .The elements and attributes that can appear in a document
+        .The number of (and order of) child elements
+        .Data types for elements and attributes
+        .Default and fixed values for elements and attributes
+
+XML AJAX
+    AJAX Introduction
+      AJAX is not a programming language
+      AJAX is a technique for accessing web servers from a web page
+      AJAX stands for Asynchronous JavaScript and XML
+
+      //ChangeContent...
+        <!DOCTYPE html>
+        <html>
+          <body>
+
+            <div id="demo">
+            <h1>The XMLHttpRequest Object</h1>
+            <button type="button" onclick="loadDoc()">Change Content</button>
+            </div>
+
+            <script>
+              function loadDoc() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("demo").innerHTML =
+                    this.responseText;
+                  }
+                };
+                xhttp.open("GET", "ajax_info.txt", true);
+                xhttp.send();
+              }
+            </script>
+
+          </body>
+        </html>
+
+    AJAX - The XMLHttpRequest Object
+      The keystone of AJAX is the XMLHttpRequest object.
+      The XMLHttpRequest object is used to exchange data with a server behind the scenes. This means that it is possible to update parts of a web page, without reloading the whole page.
+
+      Old Versions of Internet Explorer (IE5 and IE6)
+        if (window.XMLHttpRequest) {
+           // code for modern browsers
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for old IE browsers
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+      XMLHttpRequest Object Methods
+        new XMLHttpRequest()              Creates a new XMLHttpRequest object
+        abort()                           Cancels the current request
+        getAllResponseHeaders()           Returns header information
+        getResponseHeader()               Returns specific header information
+        open(method,url,async[,user,psw]) Specifies the request
+                                            .method: the request type GET or POST
+                                            .url: the file location
+                                            .async: true (asynchronous) or false (synchronous)
+                                            .user: optional user name
+                                            .psw: optional password
+        send()                            Sends the request to the server [Used for GET requests]
+        send(string)                      Sends the request to the server [Used for POST requests]
+        setRequestHeader()                Adds a label/value pair to the header to be sent
+
+      XMLHttpRequest Object Properties
+        onreadystatechange  Defines a function to be called when the readyState property changes
+        readyState          Holds the status of the XMLHttpRequest.
+                              .0: request not initialized 
+                              .1: server connection established
+                              .2: request received 
+                              .3: processing request 
+                              .4: request finished and response is ready
+        responseText        Returns the response data as a string
+        responseXML         Returns the response data as XML data
+        status              Returns the status-number of a request
+                              .200: "OK"
+                              .403: "Forbidden"
+                              .404: "Not Found"
+                              (https://www.w3schools.com/tags/ref_httpmessages.asp) Http Messages Reference 
+        statusText  Returns the status-text (e.g. "OK" or "Not Found")
+
+    AJAX - Send a Request To a Server
+
+      Send a Request To a Server
+      To send a request to a server, we use the open() and send() methods of the XMLHttpRequest object:
+
+        xhttp.open("GET", "ajax_info.txt", true);
+        xhttp.send();
+
+        GET or POST?
+          GET is simpler and faster than POST, and can be used in most cases.
+          -> However, always use POST requests when:
+            A cached file is not an option (update a file or database on the server).
+            Sending a large amount of data to the server (POST has no size limitations).
+            Sending user input (which can contain unknown characters), POST is more robust and secure than GET.
+
+          xhttp.open("GET", "demo_get.asp", true);
+          xhttp.open("GET", "demo_get.asp?t=" + Math.random(), true);
+          xhttp.open("GET", "demo_get2.asp?fname=Henry&lname=Ford", true);
+          xhttp.send();
+
+          xhttp.open("POST", "demo_post.asp", true);
+          xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+          xhttp.send("fname=Henry&lname=Ford");
+
+      Asynchronous - True or False?
