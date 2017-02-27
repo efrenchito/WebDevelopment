@@ -1,3 +1,6 @@
+XML DB Developer's Guide - https://docs.oracle.com/cd/B19306_01/appdev.102/b14259/
+Creating XML with PL/SQL - http://www.akadia.com/services/ora_gen_xml.html
+
 XML Tutorial
   ¿What is XML?
     .XML stands for eXtensibleMarkupLanguage
@@ -521,105 +524,860 @@ XML Tutorial
         .Default and fixed values for elements and attributes
 
 XML AJAX
-    AJAX Introduction
-      AJAX is not a programming language
-      AJAX is a technique for accessing web servers from a web page
-      AJAX stands for Asynchronous JavaScript and XML
+  AJAX Introduction
+    AJAX is not a programming language
+    AJAX is a technique for accessing web servers from a web page
+    AJAX stands for Asynchronous JavaScript and XML
 
-      //ChangeContent...
-        <!DOCTYPE html>
-        <html>
-          <body>
+    //ChangeContent...
+      <!DOCTYPE html>
+      <html>
+        <body>
 
-            <div id="demo">
-            <h1>The XMLHttpRequest Object</h1>
-            <button type="button" onclick="loadDoc()">Change Content</button>
-            </div>
+          <div id="demo">
+          <h1>The XMLHttpRequest Object</h1>
+          <button type="button" onclick="loadDoc()">Change Content</button>
+          </div>
 
-            <script>
-              function loadDoc() {
-                var xhttp = new XMLHttpRequest();
+          <script>
+            function loadDoc() {
+              var xhttp = new XMLHttpRequest();
+              xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                  document.getElementById("demo").innerHTML =
+                  this.responseText;
+                }
+              };
+              xhttp.open("GET", "ajax_info.txt", true);
+              xhttp.send();
+            }
+          </script>
+
+        </body>
+      </html>
+
+  AJAX - The XMLHttpRequest Object
+    The keystone of AJAX is the XMLHttpRequest object.
+    The XMLHttpRequest object is used to exchange data with a server behind the scenes. This means that it is possible to update parts of a web page, without reloading the whole page.
+
+    Old Versions of Internet Explorer (IE5 and IE6)
+      if (window.XMLHttpRequest) {
+         // code for modern browsers
+          xmlhttp = new XMLHttpRequest();
+      } else {
+          // code for old IE browsers
+          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+
+    XMLHttpRequest Object Methods
+      new XMLHttpRequest()              Creates a new XMLHttpRequest object
+      abort()                           Cancels the current request
+      getAllResponseHeaders()           Returns header information
+      getResponseHeader()               Returns specific header information
+      open(method,url,async[,user,psw]) Specifies the request
+                                          .method: the request type GET or POST
+                                          .url: the file location
+                                          .async: true (asynchronous) or false (synchronous)
+                                          .user: optional user name
+                                          .psw: optional password
+      send()                            Sends the request to the server [Used for GET requests]
+      send(string)                      Sends the request to the server [Used for POST requests]
+      setRequestHeader()                Adds a label/value pair to the header to be sent
+
+    XMLHttpRequest Object Properties
+      onreadystatechange  Defines a function to be called when the readyState property changes
+      readyState          Holds the status of the XMLHttpRequest.
+                            .0: request not initialized 
+                            .1: server connection established
+                            .2: request received 
+                            .3: processing request
+                            .4: request finished and response is ready
+      responseText        Returns the response data as a string
+      responseXML         Returns the response data as XML data
+      status              Returns the status-number of a request (200: "OK" | 403: "Forbidden" | 404: "Not Found" )
+                            1xx - Information
+                            2xx - Successful
+                            3xx - Redirection   
+                            4xx - Client Error
+                            5xx - Server Errors
+                            (https://www.w3schools.com/tags/ref_httpmessages.asp) Http Messages Reference 
+      statusText  Returns the status-text (e.g. "OK" or "Not Found")
+
+  AJAX - Send a Request To a Server
+
+    Send a Request To a Server
+    To send a request to a server, we use the open(method, url, async, user, pwd) and send() methods of the XMLHttpRequest object:
+     
+      xhttp.open("GET", "ajax_info.txt", true);
+      xhttp.send();
+
+      -> XMLHttpRequest.open(method, url, async, user, pwd)
+        METHOD:
+          GET or POST?
+            GET is simpler and faster than POST, and can be used in most cases.
+            -> However, always use POST requests when:
+              A cached file is not an option (update a file or database on the server).
+              Sending a large amount of data to the server (POST has no size limitations).
+              Sending user input (which can contain unknown characters), POST is more robust and secure than GET.
+
+            xhttp.open("GET", "demo_get.asp", true);
+            xhttp.open("GET", "demo_get.asp?t=" + Math.random(), true);
+            xhttp.open("GET", "demo_get2.asp?fname=Henry&lname=Ford", true);
+            xhttp.send();
+
+            xhttp.open("POST", "demo_post.asp", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("fname=Henry&lname=Ford");
+        URL:
+          The url parameter of the open() method, is an address to a file on a server.
+          The file can be any kind of file, like .txt and .xml, or server scripting files like .asp and .php (which can perform actions on the server before sending the response back).
+        ASYNC:
+          Asynchronous - True or False?
+            To specify the request asynchronously or not, define the async parameter of the open() method:
+              -> xhttp.open([method]], [url]], true/false);
+            By sending asynchronously, the JavaScript does not have to wait for the server response, but can instead:
+              .execute other scripts while waiting for server response
+              .deal with the response when the response ready
+            
+            Async = true
+              When using async = true, specify a function to execute when the response is ready in the onreadystatechange event
                 xhttp.onreadystatechange = function() {
                   if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("demo").innerHTML =
-                    this.responseText;
+                    document.getElementById("demo").innerHTML = this.responseText;
                   }
                 };
                 xhttp.open("GET", "ajax_info.txt", true);
                 xhttp.send();
-              }
-            </script>
+            
+            Async = false
+              Using async=false is not recommended, but for a few small requests this can be ok.
+              When you use async=false, do NOT write an onreadystatechange function - just put the code after the send() statement:
+                xhttp.open("GET", "ajax_info.txt", false);
+                xhttp.send();
+                document.getElementById("demo").innerHTML = xhttp.responseText;
 
-          </body>
-        </html>
+  AJAX - Server Response
+    The onreadystatechange Property
+      The readyState property holds the status of the XMLHttpRequest.
+      The onreadystatechange property defines a function to be executed when the readyState changes.
+      The status property and the statusText property holds the status of the XMLHttpRequest object.
 
-    AJAX - The XMLHttpRequest Object
-      The keystone of AJAX is the XMLHttpRequest object.
-      The XMLHttpRequest object is used to exchange data with a server behind the scenes. This means that it is possible to update parts of a web page, without reloading the whole page.
-
-      Old Versions of Internet Explorer (IE5 and IE6)
-        if (window.XMLHttpRequest) {
-           // code for modern browsers
-            xmlhttp = new XMLHttpRequest();
-        } else {
-            // code for old IE browsers
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+      When readyState is 4 and status is 200, the response is ready:
+        //Example...
+        function loadDoc() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("demo").innerHTML =
+                    this.responseText;
+               }
+            };
+            xhttp.open("GET", "ajax_info.txt", true);
+            xhttp.send(); 
         }
 
-      XMLHttpRequest Object Methods
-        new XMLHttpRequest()              Creates a new XMLHttpRequest object
-        abort()                           Cancels the current request
-        getAllResponseHeaders()           Returns header information
-        getResponseHeader()               Returns specific header information
-        open(method,url,async[,user,psw]) Specifies the request
-                                            .method: the request type GET or POST
-                                            .url: the file location
-                                            .async: true (asynchronous) or false (synchronous)
-                                            .user: optional user name
-                                            .psw: optional password
-        send()                            Sends the request to the server [Used for GET requests]
-        send(string)                      Sends the request to the server [Used for POST requests]
-        setRequestHeader()                Adds a label/value pair to the header to be sent
+    Using a Callback Function
+      A callback function is a function passed as a parameter to another function.
+      If you have more than one AJAX task in a website, you should create one function for executing the XMLHttpRequest object, and one callback function for each AJAX task.
+      The function call should contain the URL and what function to call when the response is ready.
 
-      XMLHttpRequest Object Properties
-        onreadystatechange  Defines a function to be called when the readyState property changes
-        readyState          Holds the status of the XMLHttpRequest.
-                              .0: request not initialized 
-                              .1: server connection established
-                              .2: request received 
-                              .3: processing request 
-                              .4: request finished and response is ready
-        responseText        Returns the response data as a string
-        responseXML         Returns the response data as XML data
-        status              Returns the status-number of a request
-                              .200: "OK"
-                              .403: "Forbidden"
-                              .404: "Not Found"
-                              (https://www.w3schools.com/tags/ref_httpmessages.asp) Http Messages Reference 
-        statusText  Returns the status-text (e.g. "OK" or "Not Found")
+        //Callback...
+          loadDoc("url-1", myFunction1);
+          loadDoc("url-2", myFunction2);
 
-    AJAX - Send a Request To a Server
+          function loadDoc(url, cFunction) {
+            var xhttp;
+            xhttp=new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                cFunction(this);
+              }
+           };
+            xhttp.open("GET", url, true);
+            xhttp.send();
+          }
 
-      Send a Request To a Server
-      To send a request to a server, we use the open() and send() methods of the XMLHttpRequest object:
+          function myFunction1(xhttp) {
+            // action goes here
+          }
 
-        xhttp.open("GET", "ajax_info.txt", true);
-        xhttp.send();
+          function myFunction2(xhttp) {
+            // action goes here
+          }
 
-        GET or POST?
-          GET is simpler and faster than POST, and can be used in most cases.
-          -> However, always use POST requests when:
-            A cached file is not an option (update a file or database on the server).
-            Sending a large amount of data to the server (POST has no size limitations).
-            Sending user input (which can contain unknown characters), POST is more robust and secure than GET.
+    Server Response Properties
+      responseText  get the response data as a string
+        //responseText...
+          document.getElementById("demo").innerHTML = xhttp.responseText;
 
-          xhttp.open("GET", "demo_get.asp", true);
-          xhttp.open("GET", "demo_get.asp?t=" + Math.random(), true);
-          xhttp.open("GET", "demo_get2.asp?fname=Henry&lname=Ford", true);
+      responseXML   get the response data as XML data
+        //responseXML...
+          xmlDoc = xhttp.responseXML;
+          txt = "";
+          x = xmlDoc.getElementsByTagName("ARTIST");
+          for (i = 0; i < x.length; i++) {
+            txt += x[i].childNodes[0].nodeValue + "<br>";
+          }
+          document.getElementById("demo").innerHTML = txt;
+          xhttp.open("GET", "cd_catalog.xml", true);
           xhttp.send();
 
-          xhttp.open("POST", "demo_post.asp", true);
-          xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-          xhttp.send("fname=Henry&lname=Ford");
+    Server Response Methods
+      getResponseHeader()     Returns specific header information from the server resource
+        //responseXML...
+          xmlDoc = xhttp.responseXML;
+          txt = "";
+          x = xmlDoc.getElementsByTagName("ARTIST");
+          for (i = 0; i < x.length; i++) {
+            txt += x[i].childNodes[0].nodeValue + "<br>";
+            }
+          document.getElementById("demo").innerHTML = txt;
+          xhttp.open("GET", "cd_catalog.xml", true);
+          xhttp.send();
 
-      Asynchronous - True or False?
+      getAllResponseHeaders() Returns all the header information from the server resource
+        //responseHeaders...
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              document.getElementById("demo").innerHTML =
+              this.getAllResponseHeaders();
+            }
+          };
+
+XML DOM
+  DOM Introduction
+    What is the DOM?
+      The DOM defines a standard for accessing and manipulating documents:
+        "The W3C Document Object Model (DOM) is a platform and language-neutral interface that allows programs and scripts to dynamically access and update the content, structure, and style of a document."
+
+      The HTML DOM
+        All HTML elements can be accessed through the HTML DOM.
+          //HTMLDom_1
+            <h1 id="demo">This is a Heading</h1>
+            <script>
+              document.getElementById("demo").innerHTML = "Hello World!";
+            </script>
+
+          //HTMLDom_2
+            <h1>This is a Heading</h1>
+            <h1>This is a Heading</h1>
+            <script>
+            document.getElementsByTagName("h1")[0].innerHTML = "Hello World!";
+            </script>
+
+      The XML DOM
+        All XML elements can be accessed through the XML DOM.
+        The XML DOM is:
+          A standard object model for XML
+          A standard programming interface for XML
+          Platform- and language-independent
+          A W3C standard
+
+        Get the Value of an XML Element
+          //XMLElement...
+          txt = xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+
+        Loading an XML File
+          //XMLFile...
+            <p id="demo"></p>
+
+            <script>
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                myFunction(this);
+                }
+            };
+            xhttp.open("GET", "books.xml", true);
+            xhttp.send();
+
+            function myFunction(xml) {
+                var xmlDoc = xml.responseXML;
+                document.getElementById("demo").innerHTML =
+                xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+            }
+            </script>
+
+          xmlDoc - the XML DOM object created by the parser.
+          getElementsByTagName("title")[0] - get the first <title> element
+          childNodes[0] - the first child of the <title> element (the text node)
+          nodeValue - the value of the node (the text itself)
+
+        Loading an XML String
+          //XMLString...
+            <p id="demo"></p>
+
+            <script>
+            var text, parser, xmlDoc;
+
+            text = "<bookstore><book>" +
+            "<title>Everyday Italian</title>" +
+            "<author>Giada De Laurentiis</author>" +
+            "<year>2005</year>" +
+            "</book></bookstore>";
+
+            parser = new DOMParser();
+            xmlDoc = parser.parseFromString(text,"text/xml");
+
+            document.getElementById("demo").innerHTML =
+            xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+            </script>
+
+      Programming Interface
+        The DOM models XML as a set of node objects. The nodes can be accessed with JavaScript or other programming languages. In this tutorial we use JavaScript.
+
+        The programming interface to the DOM is defined by a set standard properties and methods.
+        Properties are often referred to as something that is (i.e. nodename is "book").
+        Methods are often referred to as something that is done (i.e. delete "book").
+
+        XML DOM Properties
+          These are some typical DOM properties:
+          . x.nodeName - the name of x
+          . x.nodeValue - the value of x
+          . x.parentNode - the parent node of x
+          . x.childNodes - the child nodes of x
+          . x.attributes - the attributes nodes of x
+          -> Note: In the list above, x is a node object.
+
+        XML DOM Methods
+          . x.getElementsByTagName(name) - get all elements with a specified tag name
+          . x.appendChild(node) - insert a child node to x
+          . x.removeChild(node) - remove a child node from x
+          -> Note: In the list above, x is a node object.
+
+  DOM Nodes
+    According to the XML DOM, everything in an XML document is a node:
+
+     .The entire document is a document node
+     .Every XML element is an element node
+     .The text in the XML elements are text nodes
+     .Every attribute is an attribute node
+     .Comments are comment nodes
+
+    //DOM Example...
+      <?xml version="1.0" encoding="UTF-8"?>
+      <bookstore>
+        <book category="cooking">
+          <title lang="en">Everyday Italian</title>
+          <author>Giada De Laurentiis</author>
+          <year>2005</year>
+          <price>30.00</price>
+        </book>
+        <book category="children">
+          <title lang="en">Harry Potter</title>
+          <author>J K. Rowling</author>
+          <year>2005</year>
+          <price>29.99</price>
+        </book>
+        <book category="web">
+          <title lang="en">XQuery Kick Start</title>
+          <author>James McGovern</author>
+          <author>Per Bothner</author>
+          <author>Kurt Cagle</author>
+          <author>James Linn</author>
+          <author>Vaidyanathan Nagarajan</author>
+          <year>2003</year>
+          <price>49.99</price>
+        </book>
+        <book category="web" cover="paperback">
+          <title lang="en">Learning XML</title>
+          <author>Erik T. Ray</author>
+          <year>2003</year>
+          <price>39.95</price>
+        </book>
+      </bookstore>
+      . The root node in the XML above is named <bookstore>.
+      . All other nodes in the document are contained within <bookstore>.
+      . The root node <bookstore> holds 4 <book> nodes.
+      . The first <book> node holds the child nodes: <title>, <author>, <year>, and <price>.
+      . The child nodes contain one text node each, "Everyday Italian", "Giada De Laurentiis", "2005", and "30.00
+
+    Text is Always Stored in Text Nodes
+      A common error in DOM processing is to expect an element node to contain text.
+      However, the text of an element node is stored in a text node.
+      In this example: <year>2005</year>, the element node <year> holds a text node with the value "2005". 
+      "2005" is not the value of the <year> element!
+
+    The XML DOM Node Tree
+      The XML DOM views an XML document as a tree-structure. The tree structure is called a node-tree.
+
+      Node Parents, Children, and Siblings
+        The nodes in the node tree have a hierarchical relationship to each other.
+        The terms parent, child, and sibling are used to describe the relationships. 
+        Parent nodes have children. Children on the same level are called siblings (brothers or sisters).
+
+        . In a node tree, the top node is called the root
+        . Every node, except the root, has exactly one parent node
+        . A node can have any number of children
+        . A leaf is a node with no children
+        . Siblings are nodes with the same parent
+
+      First child, last child
+        //XMLFragment...
+          <bookstore>
+            <book category="cooking">
+              <title lang="en">Everyday Italian</title>
+              <author>Giada De Laurentiis</author>
+              <year>2005</year>
+              <price>30.00</price>
+            </book>
+          </bookstore>
+
+        In the XML above, the <title> element is the first child of the <book> element, 
+        and the <price> element is the last child of the <book> element.
+        Furthermore, the <book> element is the parent node of the <title>, <author>, <year>, and <price> elements.
+
+  DOM - Accessing Nodes
+    With the DOM, you can access every node in an XML document.
+
+    Accessing Nodes
+    You can access a node in three ways:
+      1. By using the getElementsByTagName() method
+      2. By looping through (traversing) the nodes tree.
+      3. By navigating the node tree, using the node relationships.
+
+    The getElementsByTagName() Method
+     getElementsByTagName() returns all elements with a specified tag name.
+    
+      DOM Node List
+       The getElementsByTagName() method returns a node list. A node list is an array of nodes.
+
+        DOM Node List length
+         The length property defines the length of a node list (the number of nodes).
+
+        Node Types
+         The documentElement property of the XML document is the root node.
+         The nodeName property of a node is the name of the node.
+         The nodeType property of a node is the type of the node.
+
+  DOM Node Information
+   The nodeName, nodeValue, and nodeType properties contain information about nodes.
+
+    Node Properties
+     In the XML DOM, each node is an object.
+     Objects have methods and properties, that can be accessed and manipulated by JavaScript.
+ 
+     Three important node properties are:
+     . nodeName *
+     . nodeValue
+     . nodeType *
+       * read-only
+
+      The nodeName Property: Specifies the name of a node.
+      . nodeName is read-only
+      . nodeName of an element node is the same as the tag name
+      . nodeName of an attribute node is the attribute name
+      . nodeName of a text node is always #text
+      . nodeName of the document node is always #document
+
+      The nodeValue Property: Specifies the value of a node.
+      . nodeValue for element nodes is undefined
+      . nodeValue for text nodes is the text itself
+      . nodeValue for attribute nodes is the attribute value
+
+      The nodeType Property: Specifies the type of node.
+       The most important node types are:
+      . Element     1
+      . Attribute   2
+      . Text        3
+      . Comment     8
+      . Document    9
+
+  DOM Node List
+    When using properties or methods like childNodes or getElementsByTagName(), a node list object is returned.
+    A node list object represents a list of nodes, in the same order as in the XML.
+    Nodes in the node list are accessed with index numbers starting from 0.
+
+    Suppose "books.xml" is loaded into the variable xmlDoc.
+    This code fragment returns a node list of title elements in "books.xml":
+      x = xmlDoc.getElementsByTagName("title");
+
+    After the execution of the statement above, x is a node list object.
+    The following code fragment returns the text from the first <title> element in the node list (x):
+      var txt = x[0].childNodes[0].nodeValue;
+
+    Node List Length
+     A node list object keeps itself up-to-date. If an element is deleted or added, the list is automatically updated.
+     The length property of a node list is the number of nodes in the list.
+
+      x = xmlDoc.getElementsByTagName('title');
+      for(i = 0; i < x.length; i++){
+        text = x[i].childNodes[0].nodeValue + "<br/>";
+      }
+
+    Attributes List (Named Node Map)
+     The attributes property of an element node returns a list of attribute nodes.
+     This is called a named node map, and is similar to a node list, except for some differences in methods and properties. 
+     
+      x = xmlDoc.getElementsByTagName("book").attributes;
+      text = x.getNamedItem("category").nodeValue;
+
+  DOM Traverse Node Tree
+    Traversing means looping through or traveling across the node tree.
+      //Traverse...
+        <script>
+        var x, i ,xmlDoc;
+        var txt = "";
+        var text = "<book>" + 
+        "<title>Everyday Italian</title>" +
+        "<author>Giada De Laurentiis</author>" +
+        "<year>2005</year>" +
+        "</book>";
+
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(text,"text/xml");
+
+        // documentElement always represents the root node
+        x = xmlDoc.documentElement.childNodes;
+        for (i = 0; i < x.length ;i++) {
+            txt += x[i].nodeName + ": " + x[i].childNodes[0].nodeValue + "<br>";
+        }
+        document.getElementById("demo").innerHTML = txt;
+        </script>
+
+    Browser Differences in DOM Parsing
+      All modern browsers support the W3C DOM specification.
+      However, there are some differences between browsers. One important difference is:
+      .The way they handle white-spaces and new lines
+
+      DOM - White Spaces and New Lines
+       XML often contains new line, or white space characters, between nodes. This is often the case when the document is edited by a simple editor like Notepad (containing CR/LF)
+       Internet Explorer 9 and lower do NOT treat empty white-spaces, or new lines as text nodes, while other browsers do.
+
+      PCDATA - Parsed Character Data
+       XML parsers normally parse all the text in an XML document.
+       When an XML element is parsed, the text between the XML tags is also parsed:
+       The parser does this because XML elements can contain other elements, as in this example, where the <name> element contains two other elements (first and last):
+       
+        <name><first>Bill</first><last>Gates</last></name>
+        <name>
+          <first>Bill</first>
+          <last>Gates</last>
+        </name>
+
+      CDATA - (Unparsed) Character Data
+       The term CDATA is used about text data that should not be parsed by the XML parser.
+       Characters like "<" and "&" are illegal in XML elements.
+       Some text, like JavaScript code, contains a lot of "<" or "&" characters. To avoid errors script code can be defined as CDATA.
+       Everything inside a CDATA section is ignored by the parser.  A CDATA section starts with "<![CDATA[" This is a CDATA section "]]>":
+
+        //CDATAsample...
+          <script>
+          <![CDATA[
+          function matchwo(a,b) {
+              if (a < b && a < 0) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          }
+          ]]>
+          </script>
+        *NOTES: A CDATA section cannot contain the string "]]>"
+
+  DOM - Navigatin Nodes
+    Nodes can be navigated using node relationships.
+    Accessing nodes in the node tree via the relationship between nodes, is often called "navigating nodes".
+
+    In the XML DOM, node relationships are defined as properties to the nodes:
+     .parentNode
+     .childNodes
+     .firstChild
+     .lastChild
+     .nextSibling
+     .previousSibling
+
+    Avoid Empty Text Nodes
+    Firefox, and some other browsers, will treat empty white-spaces or new lines as text nodes, Internet Explorer will not.
+    This causes a problem when using the properties: firstChild, lastChild, nextSibling, previousSibling.
+    To avoid navigating to empty text nodes (spaces and new-line characters between element nodes), use nodetype property:
+
+      //nextSibling
+      function get_nextSibling(n) {
+          var y = n.nextSibling;
+          while (y.nodeType! = 1) {
+              y = y.nextSibling;
+          }
+          return y;
+      }
+      *NOTES: The function above allows you to use get_nextSibling(node) instead of the property node.nextSibling.
+
+  DOM Get Values [nodeValue;getAttribute();getNamedItem();]
+
+    Get the Value of an Element
+     In the DOM, everything is a node. Element nodes do not have a text value.
+     The text value of an element node is stored in a child node. This node is called a text node.
+     *To retrieve the text value of an element, you must retrieve the value of the elements' text node. -> childNode[0].nodeValue
+
+     - The getElementsByTagName Method
+       The getElementsByTagName() method returns a node list of all elements, with the specified tag name, in the same order as they appear in  the source document.
+        var x = xmlDoc.getElementsByTagName("title")[0];
+
+     - The childNodes Property
+       The childNodes property returns a list of an element's child nodes. The following code retrieves the text node of the first <title> element:
+        //childNodes_sample
+          x = xmlDoc.getElementsByTagName("title")[0];
+          y = x.childNodes[0];
+
+     - The nodeValue Property
+       The nodeValue property returns the text value of a text node.
+       The following code retrieves the text value of the text node of the first <title> element:
+        //nodeValue_sample
+          x = xmlDoc.getElementsByTagName("title")[0];
+          y = x.childNodes[0];
+          z = y.nodeValue;
+
+    Get the Value of an Attribute
+     In the DOM, attributes are nodes. Unlike element nodes, attribute nodes have text values.
+     The way to get the value of an attribute, is to get its text value.
+     This can be done using the getAttribute()/getNamedItem() method or using the nodeValue property of the attribute node.
+
+     - Get an Attribute Value - getAttribute()
+       The getAttribute() method returns an attribute's value.
+        //getAttribute_sample...
+         x = xmlDoc.getElementsByTagName("title")[0];
+         txt = x.getAttribute("lang");
+
+     - Get an Attribute Value - getAttributeNode()
+      The getAttributeNode() method returns an attribute node.
+      The following code retrieves the text value of the "lang" attribute of the first <title> element:
+        //getAttributeNode_sample
+         x = xmlDoc.getElementsByTagName("title")[0];
+         y = x.getAttributeNode("lang");
+         txt = y.nodeValue;
+
+     - Get an Attribute Value - getNamedItem()
+      The getNamedItem() method returns an attribute's value from an attributeList.
+        //getNamedItem_sample
+          x = xmlDoc.getElementsByTagName("book").attributes;
+          text = x.getNamedItem("category").nodeValue;
+
+  DOM Change Node Values
+   The nodeValue property is used to change a node value.
+   The setAttribute() method is used to change an attribute value.
+
+    Change the Value of an Element
+     In the DOM, everything is a node. Element nodes do not have a text value.
+     The text value of an element node is stored in a child node. This node is called a text node.
+     To change the text value of an element, you must change the value of the elements's text node.
+
+      Change the Value of a Text Node
+       The nodeValue property can be used to change the value of a text node.
+        ->   xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue = "new content"
+
+    Change the Value of an Attribute
+     In the DOM, attributes are nodes. Unlike element nodes, attribute nodes have text values.
+     The way to change the value of an attribute, is to change its text value.
+     This can be done using the setAttribute() method or setting the nodeValue property of the attribute node.
+
+      Change an Attribute Using setAttribute()
+       The setAttribute() method changes the value of an attribute.
+       If the attribute does not exist, a new attribute is created.
+        ->   xmlDoc.getElementsByTagName("book")[0].setAttribute("category","food");
+
+      Change an Attribute Using nodeValue
+       The nodeValue property is the value of a attribute node.
+       Changing the value property changes the value of the attribute.
+        ->   xmlDoc.getElementsByTagName("book")[0].getAttributeNode("category").nodeValue = "food";
+
+  DOM Remove Nodes
+   The removeChild() method removes a specified node.
+   The removeAttribute() method removes a specified attribute.
+
+    Remove an Element Node
+     The removeChild() method removes a specified node.
+     When a node is removed, all its child nodes are also removed.
+      ->   y = xmlDoc.getElementsByTagName("book")[0];
+           xmlDoc.documentElement.removeChild(y);
+
+    Remove Myself - Remove the Current Node
+     The removeChild() method is the only way to remove a specified node.
+     When you have navigated to the node you want to remove, it is possible to remove that node using the parentNode property and the removeChild() method:
+      ->  x = xmlDoc.getElementsByTagName("book")[0];
+          x.parentNode.removeChild(x);
+
+    Remove a Text Node
+     The removeChild() method can also be used to remove a text node:
+      ->  x = xmlDoc.getElementsByTagName("title")[0];
+          y = x.childNodes[0];
+          x.removeChild(y);
+          *NOTE: It is not very common to use removeChild() just to remove the text from a node. 
+          The nodeValue property can be used instead. See next paragraph.
+
+    Clear a Text Node
+     The nodeValue property can be used to change the value of a text node:
+      ->   xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue = "";
+  
+    Remove an Attribute Node by Name
+     The removeAttribute() method removes an attribute node by its name.
+      ->   x = xmlDoc.getElementsByTagName("book");
+           x[0].removeAttribute("category");
+
+    Remove Attribute Nodes by Object
+     The removeAttributeNode() method removes an attribute node, using the node object as parameter.
+      -> x = xmlDoc.getElementsByTagName("book");
+        for (i = 0; i < x.length; i++) {
+            while (x[i].attributes.length > 0) {
+                attnode = x[i].attributes[0];
+                old_att = x[i].removeAttributeNode(attnode);
+            }
+        }
+
+  DOM Replace Nodes
+   The replaceChild() method replaces a specified node.
+   The nodeValue property replaces text in a text node.
+
+    Replace an Element Node
+     The replaceChild() method is used to replace a node.
+      //replaceElementNode_sample
+        xmlDoc=loadXMLDoc("books.xml");
+        x=xmlDoc.documentElement;
+
+        //create a book element, title element and a text node
+        newNode=xmlDoc.createElement("book");
+        newTitle=xmlDoc.createElement("title");
+        newText=xmlDoc.createTextNode("A Notebook");
+
+        //add the text node to the title node,
+        newTitle.appendChild(newText);
+        //add the title node to the book node
+        newNode.appendChild(newTitle);
+
+        y=xmlDoc.getElementsByTagName("book")[0]
+        //replace the first book node with the new node
+        x.replaceChild(newNode,y);
+
+    Replace Data In a Text Node
+     The replaceData() method is used to replace data in a text node.
+     The replaceData() method has three parameters:
+      .offset - Where to begin replacing characters. Offset value starts at zero
+      .length - How many characters to replace
+      .string - The string to insert
+        ->    xmlDoc=loadXMLDoc("books.xml");
+              x=xmlDoc.getElementsByTagName("title")[0].childNodes[0];
+              x.replaceData(0,8,"Easy");
+
+    Use the nodeValue Property Instead  
+     It is easier to replace the data in a text node using the nodeValue property.
+      ->    xmlDoc=loadXMLDoc("books.xml");
+            x=xmlDoc.getElementsByTagName("title")[0].childNodes[0];
+            x.nodeValue="Easy Italian";
+
+  DOM Create Nodes [createElement;createAttribute/setAttribute;createTextNode;createCDATASection;createComment]
+    
+    Create a New Element Node
+     The createElement() method creates a new element node:
+      ->    newElement = xmlDoc.createElement("edition");
+            xmlDoc.getElementsByTagName("book")[0].appendChild(newElement);
+
+    Create a New Attribute Node
+     The createAttribute() is used to create a new attribute node:
+      ->    newAtt = xmlDoc.createAttribute("edition");
+            newAtt.nodeValue = "first";
+            xmlDoc.getElementsByTagName("title")[0].setAttributeNode(newAtt);
+
+    Create an Attribute Using setAttribute()
+     Since the setAttribute() method creates a new attribute if the attribute does not exist, it can be used to create a new attribute.
+      ->    xmlDoc.getElementsByTagName('book')[0].setAttribute("edition","first");
+
+    Create a Text Node
+     The createTextNode() method creates a new text node:
+      ->    newText = xmlDoc.createTextNode("first");
+            newEle = xmlDoc.createElement("edition");
+            newEle.appendChild(newText);
+
+            xmlDoc.getElementsByTagName("book")[0].appendChild(newEle);
+
+    Create a CDATA Section Node
+     The createCDATASection() method creates a new CDATA section node.
+      ->    newCDATA = xmlDoc.createCDATASection("Special Offer & Book Sale");
+            xmlDoc.getElementsByTagName("book")[0].appendChild(newCDATA);
+
+    Create a Comment Node
+     The createComment() method creates a new comment node.
+      ->    newComment = xmlDoc.createComment("Revised March 2015");
+            xmlDoc.getElementsByTagName("book")[0].appendChild(newComment);
+
+  DOM Add Nodes (appendChild/insertBefore)
+    Add a Node - appendChild()
+     The appendChild() method adds a child node to an existing node.
+     The new node is added (appended) after any existing child nodes.
+      //appendChild(1)...
+        newEle = xmlDoc.createElement("edition");
+        xmlDoc.getElementsByTagName("book")[0].appendChild(newEle);
+
+      //appendChild(2)
+        newEle = xmlDoc.createElement("edition");
+        newText = xmlDoc.createTextNode("first");
+        newEle.appendChild(newText);
+
+        xmlDoc.getElementsByTagName("book")[0].appendChild(newEle);
+
+    Insert a Node - insertBefore()
+     The insertBefore() method inserts a node before a specified child node.
+      //insertBefore(1)
+        newNode = xmlDoc.createElement("book");
+        x = xmlDoc.documentElement;
+        y = xmlDoc.getElementsByTagName("book")[3];
+        x.insertBefore(newNode,y);
+      *NOTE: If the second parameter of insertBefore() is null, the new node will be added after the last existing child node.
+        ->   x.insertBefore(newNode,null) and x.appendChild(newNode) will both append a new child node to x.
+
+    Add a New Attribute
+     The setAttribute() method sets the value of an attribute.
+       ->    xmlDoc.getElementsByTagName('book')[0].setAttribute("edition","first");
+     *NOTE: There is no method called addAttribute(). The setAttribute() will create a new attribute if the attribute does not exist.
+
+    Add Text to a Text Node - insertData()
+     The insertData() method inserts data into an existing text node.
+     The insertData() method has two parameters:
+      .offset - Where to begin inserting characters (starts at zero)
+      .string - The string to insert
+      ->    xmlDoc.getElementsByTagName("title")[0].childNodes[0].insertData(0,"Easy ");
+
+  DOM Clone Nodes
+    Copy a Node
+     The cloneNode() method creates a copy of a specified node. The cloneNode() method has a boolean parameter (true or false). 
+     This parameter indicates if the cloned node should include all attributes and child nodes of the original node.
+     The following code fragment copies the first <book> node and appends it to the root node of the document:
+        //clone(1)...
+          oldNode = xmlDoc.getElementsByTagName('book')[0];
+          newNode = oldNode.cloneNode(true);
+          xmlDoc.documentElement.appendChild(newNode);
+
+XPath Tutorial
+  XPath Introduction
+    What is XPath?
+     XPath is a major element in the XSLT standard.
+     XPath can be used to navigate through elements and attributes in an XML document.
+       .XPath stands for XML Path Language
+       .XPath uses "path like" syntax to identify and navigate nodes in an XML document
+       .XPath contains over 200 built-in functions
+       .XPath is a major element in the XSLT standard
+       .XPath is a W3C recommendation
+
+      XPath Path Expressions
+       XPath uses path expressions to select nodes or node-sets in an XML document. (like C:\Program Files\Oracle\...)
+
+      XPath Standard Functions
+       XPath includes over 200 built-in functions.
+       There are functions for string values, numeric values, booleans, date and time comparison, node manipulation, sequence manipulation, and much more. Today XPath expressions can also be used in many languages (Javascript, XML Schema, PHP, ...)
+
+      XPath is Used in XSLT
+       XPath is a major element in the XSLT standard.
+       With XPath knowledge you will be able to take great advantage of your XSLT knowledge. 
+
+  XPath Nodes
+    Nodes
+     In XPath, there are seven kinds of nodes: element, attribute, text, namespace, processing-instruction, comment, and document nodes.
+     XML documents are treated as trees of nodes. The topmost element of the tree is called the root element.
+      //ExampleNodes
+       <bookstore> (root element node)
+       <author>J K. Rowling</author> (element node)
+       lang="en" (attribute node)
+
+    Atomic values: are nodes with no children or parent.
+    Items: Are atomic values or nodes.
+
+    Relationship of Nodes
